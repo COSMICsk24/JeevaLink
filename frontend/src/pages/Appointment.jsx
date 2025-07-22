@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect, use } from 'react'
 import { AppContext } from '../context/AppContext'
 import { useParams } from 'react-router-dom'
 import { assets } from '../assets/assets'
@@ -6,17 +6,36 @@ import { assets } from '../assets/assets'
 const Appointment = () => {
   const { docId } = useParams()
   const { doctors, currencySymbol } = useContext(AppContext)
+
   const [docInfo, setDocInfo] = useState(null)
+  const [docSlots, setDocSlots] = useState([])
+  const [slotIndex, setSlotIndex] = useState(0)
+  const [slotTime, setSlotTime] = useState('')
 
   const fetchDocInfo = async () => {
   const docInfo = doctors.find(doc => doc._id === docId)
   setDocInfo(docInfo)
-  console.log(docInfo)
+
   }
+
+  const getAvailableSlots = async () => {
+    setDocSlots([])
+
+    //current date
+    let today = new Date()
+    for(let i = 0; i < 7; i++) {
+      let currentDate = new Date(today)
+      currentDate.setDate(today.getDate() + i)
+
+    }
+  
   useEffect(()=>{
     fetchDocInfo()
   },[doctors, docId])
 
+  useEffect(() => {
+    getAvailableSlots()
+  }, [docInfo])
 
 
   return docInfo &&(
